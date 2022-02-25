@@ -1,0 +1,86 @@
+﻿.sidebar-nav {
+    background-color: #ecf5fc;
+    padding: 0 0 0 20px;
+
+    h4 {
+        color: #e4173e;
+        font-family: 'Roboto Condensed', sans-serif;
+        text-transform: uppercase;
+        font-size: 20px;
+        text-align: left;
+        line-height: 40px;
+    }
+
+    ul {
+        width:100%;
+        list-style-type: none;
+        padding-left: 0;
+
+        li {
+            border-top: 1px dotted rgba(0, 0, 0, 0.0980392);
+            position: relative;
+            width: 100%;
+            user-select: none;
+            -webkit-user-select: none;
+
+
+            a {
+                color: rgba(0, 0, 0, 0.701961);
+                padding: 7px 0;
+                display: inline-block;
+                width: calc(100% - 50px);
+
+                &:hover {
+                    text-decoration: none;
+                    border-bottom: 0;
+                }
+            }
+
+            &.selected a {
+                color: #004c84;
+                font-weight: bold;
+                display: block;
+                margin-right: 50px;
+            }
+
+            a.menu-toggle {
+                position: relative;
+                width: 50px;
+                text-align: center;
+                border-bottom: 0;
+                vertical-align: top;
+
+                &:after {
+                    position: relative;
+                    right: 0;
+                    text-align: middle;
+                    font-family: FontAwesome;
+                    font-size: 12px;
+                    content: "\f078";
+                }
+
+                &:focus,
+                &:hover,
+                &:visited,
+                &:link {
+                    border-bottom: 0;
+                    text-decoration: none;
+                }
+
+                &.rotate {
+                    transform: rotate(180deg);
+                    /* right: 1px; */
+                }
+            }
+        }
+    }
+
+    ul.sub-menu {
+        display: none;
+        font-size: 14px;
+    }
+
+    ul.sub-menu li {
+        padding-left: 20px;
+    }
+}

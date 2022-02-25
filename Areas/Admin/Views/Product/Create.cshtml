@@ -1,0 +1,106 @@
+﻿@model MyWeb.Models.Product
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h1>Create</h1>
+
+<h4>Product</h4>
+<hr />
+<div class="row">
+    <form asp-action="Create" enctype="multipart/form-data" class="row" style="width:100%">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" value=""/>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Image" class="control-label"></label>
+                <input type="file" asp-for="Image" class="form-control" />
+                <span asp-validation-for="Image" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" value=""/>
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="Limit" class="control-label"></label>
+                <input asp-for="Limit" class="form-control" value=""/>
+                <span asp-validation-for="Limit" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Status" class="control-label"></label>
+                <select asp-for="Status" class="form-control" value="">
+                    <option value="1">Mở bán</option>
+                    <option value="0">Dừng bán</option>
+                </select>
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+@*            <div class="form-group">
+                <label asp-for="CategoryId" class="control-label"></label>
+                <select asp-for="CategoryId" class ="form-control" asp-items="ViewBag.CategoryId"></select>
+            </div>*@
+             <div class="form-group">
+                <label asp-for="CategoryId" class="control-label"></label>
+                <select asp-for="CategoryId" class ="form-control">
+                    @foreach(var item in ViewBag.list)
+                    {
+                        @renderItem(item,0);
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="form-group">
+                <label asp-for="Content" class="control-label"></label>
+                <textarea asp-for="Content" class="form-control" name="content" ></textarea>
+                <span asp-validation-for="Content" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group col-md-6">
+            <input type="submit" value="Create" class="btn btn-primary" />
+        </div>
+     </form>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@{
+    async Task renderItem(Category item, int level){
+        string s = string.Concat(Enumerable.Repeat("---", level));
+        if(level==0)
+        {
+            <option value="@item.Id" class="text-danger" >@s  @item.Name</option>
+        }
+        else
+        {
+            <option value="@item.Id" >@s  @item.Name</option>
+        }
+        if(item.ChildCategories.Count>0)
+        {
+            foreach (var item2 in item.ChildCategories)
+            {
+                renderItem(item2, level+1);
+            }
+        }
+    }
+}
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+@section footer{
+    <script src="~/ckeditor/ckeditor.js"></script>
+    <script>
+        CKEDITOR.replace('content');
+    </script>
+}

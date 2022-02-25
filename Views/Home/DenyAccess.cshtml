@@ -1,0 +1,10 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<partial name="_StatusMessage" model="@TempData["success"]"></partial>
+<div class="text-center">
+    <h1 class="display-4">Hạn chế quyền truy cập</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <a asp-controller="Home" asp-action="Index">Quay về</a>
+</div>

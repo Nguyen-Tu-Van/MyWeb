@@ -1,0 +1,136 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+a {
+  text-decoration: none;
+}
+
+.photo {
+  position: relative;
+}
+.photo span {
+  position: absolute;
+  top: 50%;
+  left: 42%;
+  display: none;
+}
+.photo:hover span {
+  display: block;
+}
+
+.sr-only:hover {
+  background-color: black;
+}
+
+#parent {
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: row-reverse;
+}
+
+.quantity {
+  width: 5em;
+}
+
+.checkout {
+  padding: 1em;
+  background-color: beige;
+  height: fit-content;
+}
+
+.transport div {
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+}
+
+.sidebar-nav {
+  background-color: #ecf5fc;
+  padding: 0 0 0 20px;
+}
+.sidebar-nav h4 {
+  color: #e4173e;
+  font-family: "Roboto Condensed", sans-serif;
+  text-transform: uppercase;
+  font-size: 20px;
+  text-align: left;
+  line-height: 40px;
+}
+.sidebar-nav ul {
+  width: 100%;
+  list-style-type: none;
+  padding-left: 0;
+}
+.sidebar-nav ul li {
+  border-top: 1px dotted rgba(0, 0, 0, 0.0980392);
+  position: relative;
+  width: 100%;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.sidebar-nav ul li a {
+  color: rgba(0, 0, 0, 0.701961);
+  padding: 7px 0;
+  display: inline-block;
+  width: calc(100% - 50px);
+}
+.sidebar-nav ul li a:hover {
+  text-decoration: none;
+  border-bottom: 0;
+}
+.sidebar-nav ul li.selected a {
+  color: #004c84;
+  font-weight: bold;
+  display: block;
+  margin-right: 50px;
+}
+.sidebar-nav ul li a.menu-toggle {
+  position: relative;
+  width: 50px;
+  text-align: center;
+  border-bottom: 0;
+  vertical-align: top;
+}
+.sidebar-nav ul li a.menu-toggle:after {
+  position: relative;
+  right: 0;
+  text-align: middle;
+  font-family: FontAwesome;
+  font-size: 12px;
+  content: "\f078";
+}
+.sidebar-nav ul li a.menu-toggle:focus, .sidebar-nav ul li a.menu-toggle:hover, .sidebar-nav ul li a.menu-toggle:visited, .sidebar-nav ul li a.menu-toggle:link {
+  border-bottom: 0;
+  text-decoration: none;
+}
+.sidebar-nav ul li a.menu-toggle.rotate {
+  transform: rotate(180deg);
+  /* right: 1px; */
+}
+.sidebar-nav ul.sub-menu {
+  display: none;
+  font-size: 14px;
+}
+.sidebar-nav ul.sub-menu li {
+  padding-left: 20px;
+}
+
+.pagination li {
+  padding: 0.5em 0.7em;
+  margin: 0.5em;
+  background-color: gainsboro;
+}

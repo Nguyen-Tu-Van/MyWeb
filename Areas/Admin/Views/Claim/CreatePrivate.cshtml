@@ -1,0 +1,31 @@
+﻿@model MyWeb.Areas.Admin.Controllers.ClaimController.InputModel
+@using Microsoft.AspNetCore.Identity
+@{
+    ViewData["Title"] = "Tạo quyền hạn";
+    var user = ViewData["user"] as User;
+}
+
+<h3>@ViewData["title"] - thuộc khách hàng @user.Name (@user.UserName)</h3>
+<partial name="_StatusMessage" model="@TempData["message"]"></partial>
+
+<div>
+    <form method="post">
+        <div>
+            <label>Nhập kiểu quyền hạn</label>
+            <input asp-for="ClaimType" class="form-control" />
+            <span asp-validation-for="ClaimType" class="text-danger"></span>
+        </div>
+        <div>
+            <label>Nhập giá trị quyền hạn</label>
+            <input asp-for="ClaimValue" class="form-control" />
+            <span asp-validation-for="ClaimValue" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn-primary btn mt-4" >Tạo</button>
+        <a asp-admin="Admin" asp-controller="User" asp-action="Edit" asp-route-id="@user.Id" class="btn-danger btn mt-4" >Quay về</a>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

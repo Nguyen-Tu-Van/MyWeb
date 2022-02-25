@@ -1,0 +1,78 @@
+﻿@model MyWeb.Models.Order;
+@{
+    decimal total = 0;
+    int stt = 1;
+    var product = ViewData["product"] as Product;
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <h3 class="text-center">Chi tiết đơn hàng @Model.Id</h3>
+        <table class="table">
+        <tr>
+            <th>#</th>
+            <th>Sản phẩm</th>
+            <th>Hình ảnh</th>
+            <th>Giá</th>
+            <th>Số lượng</th>
+            <th>Thành tiền</th>
+        </tr>
+        @foreach (var item in Model.OrderDetails)
+        {
+            var thanhtien = item.Quantity * item.Price;
+            total += thanhtien;
+
+            <tr>
+                <td>@(stt++)</td>
+                <td>@item.product.Name</td>
+                <td> <img src="~/images/@item.product.Image" style="width:8rem" /> </td>
+                <td>@(@item.product.Price.ToString("n0"))</td>
+                <td>@item.Quantity</td>
+                <td>@(thanhtien.ToString("n0"))</td>
+            </tr>
+        }
+            <tr>
+                <td colspan="1" class="text-right">Tổng tiền</td>
+                <td colspan="5">@(total.ToString("n0")) VNĐ</td>
+            </tr>
+        </table>
+    </div>
+    <div class="col-md-12 row pl-5 transport">
+        <div class="col-md-12"><h3 class="text-center">Thông tin khách hàng</h3></div>
+        <div class="col-md-3">Email khách hàng</div>
+        <div class="col-md-9">@Model.user.Email</div>
+        <div class="col-md-3">Tên khách hàng</div>
+        <div class="col-md-9">@Model.user.Name</div>
+        <a asp-controller="User" asp-action="Details" asp-route-id="@Model.UserId" class="btn-info btn">Xem chi tiết</a>
+    </div>
+    <form method="post">
+    <div class="col-md-12 row pl-5 transport">
+        <div class="col-md-12"><h3 class="text-center">Xác nhận vận chuyển</h3></div>
+        <div class="col-md-3">Trạng thái thanh toán</div>
+        <div class="col-md-9">
+            <select asp-for="Payment" class ="form-control">
+                <option value="0" class="text-danger"> Chưa thanh toán </option>
+                <option value="1" class="text-success"> Đã thanh toán </option>
+            </select>
+        </div>
+        <div class="col-md-3">Trạng thái vận chuyển</div>
+        <div class="col-md-9">
+            <select asp-for="Status" class ="form-control">
+                <option value="1" class="text-danger"> Chờ xác nhận </option>
+                <option value="2" class="text-primary"> Đang giao hàng </option>
+                <option value="3" class="text-success"> Giao hàng thành công </option>
+                <option value="4" class="text-warning"> Đơn hàng bị hủy </option>
+            </select>
+        </div>
+        <div class="col-md-3">Địa chỉ nhận</div>
+        <div class="col-md-9">@Model.Address</div>
+        <div class="col-md-3">Nội dung</div>
+        <div class="col-md-9">@Model.Content</div>
+        <div class="col-md-3">Ngày đặt</div>
+        <div class="col-md-9">@Model.createdAt</div>
+        <div class="col-md-3">Lần xác nhận gần đây</div>
+        <div class="col-md-9">@Model.updatedAt</div>
+        <button type="submit"  class="btn-success btn">Xác nhận</button>
+    </div>
+    </form>
+</div>

@@ -1,0 +1,114 @@
+﻿@model MyWeb.Areas.Admin.Controllers.ProductController.UploadOneFile
+@{
+    var product = ViewData["product"] as Product;
+}
+
+<h2>Upload hình ảnh cho @product.Name</h2>
+
+<form method="post" enctype="multipart/form-data">
+    <label asp-for="FileUpload"></label>
+    <input asp-for="FileUpload" />
+    <span asp-validation-for="FileUpload" class="text-danger"></span>
+
+    <button class="btn-primary btn" asp-action="UploadPhoto" asp-route-id="@product.Id"> Upload </button>
+</form>
+
+<input type="file" name="FileUpload" class="d-none" id="selectPhoto" onchange="uploadPhoto()"/>
+<button class="btn-primary btn" id="createPhoto">Upload Ajax</button>
+
+<div class="row p-2 photo-upload" id="box-photo-upload" data-id="@product.Id">
+</div>
+
+@section Scripts{
+    <script>
+        $("#createPhoto").click(function(){
+            $("#selectPhoto").click();
+        });
+
+        function uploadPhoto()
+        {
+            let box = $("#box-photo-upload");
+            let ProductId = box.data("id");
+
+            let formData = new FormData();
+            formData.append("id", ProductId);
+
+            if(document.getElementById("selectPhoto").files.length == 0) return 0;
+
+            formData.append("FileUpload",document.getElementById("selectPhoto").files[0]);
+
+            let urlListPhoto = "@Url.Action("createPhoto")";
+
+            $.ajax({
+                data: formData,
+                cache: false,
+                url: urlListPhoto,
+                type: "POST",
+                contentType: false,
+                processData: false,
+                success: function(data){
+                    LoadPhotos();
+                }
+            });
+        }
+
+        function setClickDelete()
+        {
+            $("#box-photo-upload .photo span").click(function(){
+                if(!confirm("Ban co chac chan muon xoa")) return false;
+                let btn = $(this);
+                let id = btn.data("id");
+                let formData = new FormData();
+                formData.append("id", id);
+
+                let urlListPhoto = "@Url.Action("RemovePhoto")";
+
+                $.ajax({
+                    data: formData,
+                    cache: false,
+                    url: urlListPhoto,
+                    type: "POST",
+                    contentType: false,
+                    processData: false,
+                    success: function(data){
+                        LoadPhotos();
+                    }
+                });
+            });
+        }
+        function LoadPhotos()
+        {
+            let box = $("#box-photo-upload");
+            let ProductId = box.data("id");
+            box.empty();
+
+            let formData = new FormData();
+            formData.append("id", ProductId);
+
+            let urlListPhoto = "@Url.Action("ListPhoto")";
+
+            $.ajax({
+                data: formData,
+                cache: false,
+                url: urlListPhoto,
+                type: "POST",
+                contentType: false,
+                processData: false,
+                success: function(data){
+                    data.photo.forEach(function(item){
+                        let s = `<div class="col-md-3 p-2 mb-2 photo">
+                                    <img src="/images/ProductPhoto/`+item.path+`" class="w-100" />
+                                    <span class="btn-danger btn" data-id="`+item.id+`">Delete</span>
+                                </div>`;
+                        box.append(s);
+                    });
+                    setClickDelete();
+                }
+            });
+        }
+
+        $(document).ready(function(){
+            LoadPhotos();
+        });
+    </script>
+}

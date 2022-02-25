@@ -1,0 +1,39 @@
+﻿.photo {
+    position: relative;
+
+    span {
+        position: absolute;
+        top: 50%;
+        left: 42%;
+        display: none;
+    }
+
+    &:hover {
+        span {
+            display: block;
+        }
+    }
+}
+
+.sr-only:hover {
+    background-color: black;
+}
+
+#parent {
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: row-reverse;
+}
+.quantity{
+    width:5em;
+}
+
+.checkout {
+    padding: 1em;
+    background-color: beige;
+    height: fit-content;
+}
+.transport div{
+    padding-top:0.5em;
+    padding-bottom:0.5em;
+}

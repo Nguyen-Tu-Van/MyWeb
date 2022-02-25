@@ -1,0 +1,219 @@
+﻿@model MyWeb.Models.Product
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h1>Edit</h1>
+
+<h4>Product</h4>
+<hr />
+<div class="row">
+    <form asp-action="Edit" class="row col-md-12" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="Image" />
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Limit" class="control-label"></label>
+                <input asp-for="Limit" class="form-control" />
+                <span asp-validation-for="Limit" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Status" class="control-label"></label>
+                <select asp-for="Status" class="form-control" value="">
+                    <option value="1">Mở bán</option>
+                    <option value="0">Dừng bán</option>
+                </select>
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="CategoryId" class="control-label"></label>
+                <select asp-for="CategoryId" class ="form-control">
+                    @foreach(var item in ViewBag.list)
+                    {
+                        @renderItem(item,0);
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Image" class="control-label"></label>
+                <input type="file" asp-for="Image" class="form-control" id="input-img" />
+                <span asp-validation-for="Image" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <img id="output-img" src="~/images/@Model.Image" style="width:10rem" />
+            </div>
+        </div>
+        <div class="col-md-12">
+            <label class="control-label">Ảnh phụ</label>
+            <input type="file" name="FileUpload" class="d-none" id="selectPhoto" onchange="uploadPhoto()"/>
+            <button type="button" class="btn-primary btn" id="createPhoto">Upload Ajax</button>
+            <div class="row p-2 photo-upload" id="box-photo-upload" data-id="@Model.Id">
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="form-group">
+                <label asp-for="Content" class="control-label"></label>
+                <textarea asp-for="Content" class="form-control" name="content" ></textarea>
+                <span asp-validation-for="Content" class="text-danger"></span>
+            </div>
+        </div>
+         <div class="form-group col-md-6">
+            <input type="submit" value="Save" class="btn btn-primary" />
+        </div>
+    </form>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@{
+    async Task renderItem(Category item, int level){
+        string s = string.Concat(Enumerable.Repeat("---", level));
+        if(level==0)
+        {
+            <option value="@item.Id" class="text-danger" >@s  @item.Name</option>
+        }
+        else
+        {
+            <option value="@item.Id" >@s  @item.Name</option>
+        }
+        if(item.ChildCategories.Count>0)
+        {
+            foreach (var item2 in item.ChildCategories)
+            {
+                renderItem(item2, level+1);
+            }
+        }
+    }
+}
+
+@section footer{
+    <script>
+        $("#createPhoto").click(function(){
+            $("#selectPhoto").click();
+        });
+
+        function uploadPhoto()
+        {
+            let box = $("#box-photo-upload");
+            let ProductId = box.data("id");
+
+            let formData = new FormData();
+            formData.append("id", ProductId);
+
+            if(document.getElementById("selectPhoto").files.length == 0) return 0;
+
+            formData.append("FileUpload",document.getElementById("selectPhoto").files[0]);
+
+            let urlListPhoto = "@Url.Action("createPhoto")";
+
+            $.ajax({
+                data: formData,
+                cache: false,
+                url: urlListPhoto,
+                type: "POST",
+                contentType: false,
+                processData: false,
+                success: function(data){
+                    LoadPhotos();
+                }
+            });
+        }
+
+        function setClickDelete()
+        {
+            $("#box-photo-upload .photo span").click(function(){
+                if(!confirm("Ban co chac chan muon xoa")) return false;
+                let btn = $(this);
+                let id = btn.data("id");
+                let formData = new FormData();
+                formData.append("id", id);
+
+                let urlListPhoto = "@Url.Action("RemovePhoto")";
+
+                $.ajax({
+                    data: formData,
+                    cache: false,
+                    url: urlListPhoto,
+                    type: "POST",
+                    contentType: false,
+                    processData: false,
+                    success: function(data){
+                        LoadPhotos();
+                    }
+                });
+            });
+        }
+        function LoadPhotos()
+        {
+            let box = $("#box-photo-upload");
+            let ProductId = box.data("id");
+            box.empty();
+
+            let formData = new FormData();
+            formData.append("id", ProductId);
+
+            let urlListPhoto = "@Url.Action("ListPhoto")";
+
+            $.ajax({
+                data: formData,
+                cache: false,
+                url: urlListPhoto,
+                type: "POST",
+                contentType: false,
+                processData: false,
+                success: function(data){
+                    data.photo.forEach(function(item){
+                        let s = `<div class="col-md-3 p-2 mb-2 photo">
+                                    <img src="/images/ProductPhoto/`+item.path+`" class="w-100" />
+                                    <span class="btn-danger btn" data-id="`+item.id+`">Delete</span>
+                                </div>`;
+                        box.append(s);
+                    });
+                    setClickDelete();
+                }
+            });
+        }
+
+        $(document).ready(function(){
+            LoadPhotos();
+        });
+    </script>
+    <script src="~/ckeditor/ckeditor.js"></script>
+    <script>
+        CKEDITOR.replace('content');
+    </script>
+    <script>
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                let reader = new FileReader();
+
+                reader.onload = function(e) {
+                    $('#output-img').attr('src', e.target.result);
+                }
+
+                reader.readAsDataURL(input.files[0]); // convert to base64 string
+            }
+        }
+
+        $("#input-img").change(function() {
+            readURL(this);
+        });
+    </script>
+}

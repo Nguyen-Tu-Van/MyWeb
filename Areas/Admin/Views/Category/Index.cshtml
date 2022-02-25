@@ -1,0 +1,69 @@
+﻿@model IEnumerable<MyWeb.Models.Category>
+
+@{
+    ViewData["Title"] = "Danh mục sản phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2>@ViewData["title"]</h2>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Slug)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Parent)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+            renderItem(item, 0);
+        }
+    </tbody>
+</table>
+
+@{
+    async Task renderItem(Category item,int level)
+    {
+        string s = string.Concat(Enumerable.Repeat("---", level));
+        <tr>
+            <td>
+                @s @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Slug)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td @if(level==0){@Html.Raw("class='text-danger'")} >
+                @Html.DisplayFor(modelItem => item.Parent.Name) ( @item.ChildCategories.Count )
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+        if(item.ChildCategories.Count > 0)
+        {
+            foreach (var item2 in item.ChildCategories)
+            {
+                renderItem(item2, level + 1);
+            }
+        }
+    }
+}

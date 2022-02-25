@@ -1,0 +1,55 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject RoleManager<IdentityRole> roleManager
+@{
+    ViewData["Title"] = "Danh sách chức vụ";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    var roles = ViewData["roles"] as List<IdentityRole>;
+}
+
+<h2>@ViewData["title"]</h2>
+<partial name="_StatusMessage" model="@TempData["message"]"></partial>
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Tên chức vụ
+            </th>
+            <th>
+                Quyền hạn
+            </th>
+            <th>
+                Thao tác
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in roles) {
+        <tr>
+            <td>
+                @item.Name
+            </td>
+            <td>
+                <ul>
+                    @foreach (var item2 in await roleManager.GetClaimsAsync(item))
+                    {
+                        <li>@item2</li>
+                    }
+                </ul>
+            </td>
+            <td>
+                <a class="btn-primary btn p-1 m-1" asp-action="Edit" asp-route-id="@item.Id">Edit</a> 
+                <form class="d-inline" method="post">
+                    <button  class="btn-danger btn p-1 m-1" asp-action="Delete" asp-route-id="@item.Id" onclick="if(!confirm('Bạn có chắc muốn xóa chức vụ này không?')) return false;">Delete</button>
+                </form>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

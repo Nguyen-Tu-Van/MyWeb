@@ -1,0 +1,159 @@
+﻿@model IPagedList<MyWeb.Models.Product>
+@using X.PagedList;
+@using X.PagedList.Mvc.Core;
+
+@{
+    var products = ViewData["products"] as IPagedList<MyWeb.Models.Product>;
+    var categories = ViewData["categories"] as List<Category>;
+    var category = ViewData["category"] as Category;
+}
+
+<div class="row">
+    @*<div class="col-md-3 menu">
+        <ul class="list-group">
+          <li class="list-group-item active">Danh mục sản phẩm</li>
+          @foreach (var item in category)
+          {
+                <a asp-route="product" asp-route-slug="@item.Slug"><li class="list-group-item">@item.Name</li></a>
+          }
+        </ul>
+    </div>*@
+    <div class="col-md-3 sidebar-nav"> 
+	    <div class="nav">
+		    <h4>Danh mục sản phẩm</h4>
+		    <ul>
+			   @* <li>
+				    <a href="#">Digital Experience</a><a class="menu-toggle" href="#"></a>
+				    <ul class="sub-menu">
+					    <li>
+						    <a href="#">Link 1</a><a href="#" class="menu-toggle"></a>
+						    <ul class="sub-menu">
+							    <li>
+								    <a href="#">Sub link 1</a><a href="#" class="menu-toggle"></a>
+								    <ul class="sub-menu">
+									    <li><a href="#">Sub-sub link 1</a></li>
+									    <li><a href="#">Sub-sub link 2</a></li>
+								    </ul>
+							    </li>
+							    <li><a href="#">Sub link 2</a></li>
+						    </ul>
+					    </li>
+					    <li><a href="#">Link 2</a></li>
+				    </ul>
+			    </li>*@
+                @foreach (var item in categories)
+                {
+                    renderCategory(item);
+                }
+		    </ul>
+	    </div>
+    </div>
+    <div class="col-md-9">
+        <div>
+            <nav class="navbar navbar-light bg-light">
+               <form class="form-control" method="get" asp-action="Index">
+                    <input class="form-control" type="search" placeholder="Search" aria-label="Search" name="key" style="width:80%;margin-right:1em;float:left">
+                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+               </form>
+            </nav>
+            @if (ViewData["key"] != "")
+            {
+            <p> Những sản phẩm có liên quan đến <b class="text-danger">@ViewData["Key"]</b></p>
+            }
+            @if (category != null)
+            {
+                <div id="parent">
+                    @{await renderNameCategory(category);}
+                </div>
+            }
+        </div>
+
+        <div class="row">
+            @foreach (var item in products)
+            {
+                <div class="col-md-4 p-4">
+                    <div class="card">
+                      <div style="min-height:17em;">
+                        <img class="card-img-top" src="~/images/@item.Image" alt="Card image cap">
+                      </div>
+                      <div class="card-body">
+                        <h5 class="card-title">@item.Name</h5>
+                        <p class="card-text">@Convert.ToDecimal(item.Price).ToString("#,##0") VNĐ</p>
+                        <a asp-route="detail" asp-route-slug="@item.Slug" class="btn btn-primary"> <i class="far fa-eye"></i> Xem</a>
+                        <a asp-action="AddToCart" asp-route-productid="@item.Id" class="btn btn-success"> <i class="fas fa-cart-arrow-down"></i> Giỏ hàng</a>
+                      </div>
+                    </div>
+                </div>
+            }
+            <div class="col-md-12 text-center">
+                @if(ViewData["key"]!="")
+                {
+                    @Html.PagedListPager(products, sotrang => Url.Action("Index", new { key = ViewData["key"] ,page = sotrang }))
+                }
+                else if(category!=null){
+                    @Html.PagedListPager(products, sotrang => Url.Link("product", new { slug = category.Slug ,page = sotrang }))
+                }
+                else
+                {
+                    @Html.PagedListPager(products, sotrang => Url.Action("Index", new { page = sotrang }))
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@{
+    async Task renderCategory(Category item)
+    {
+        if(item.ChildCategories.Count > 0 )
+        {
+             <li>
+			    <a asp-route="product" asp-route-slug="@item.Slug">@item.Name</a><a href="#" class="menu-toggle"></a>
+				<ul class="sub-menu">
+					@foreach (var child in item.ChildCategories)
+                     {
+                        renderCategory(child);
+                     }
+				</ul>
+            </li>
+        }
+        else
+        {
+             <li>
+			    <a asp-route="product" asp-route-slug="@item.Slug">@item.Name</a>
+             </li>
+        }
+    }
+    async Task renderNameCategory(Category item)
+    {
+        <a asp-route="product" asp-route-slug="@item.Slug" >@item.Name</a>
+        if(item.Parent!=null)
+        {
+            <b > - </b>
+            await renderNameCategory(item.Parent);
+        }
+    }
+}
+
+@section Scripts{
+    <script>
+		accordionNav = $(function(){
+		$('.menu-toggle').click(function(e) {
+			e.preventDefault();
+			var toggleButton = $(this);
+			if (toggleButton.next().hasClass('active')) {
+				toggleButton.next().removeClass('active');
+				toggleButton.next().slideUp(400);
+				toggleButton.removeClass('rotate');
+			 } else {
+				toggleButton.parent().parent().find('li .sub-menu').removeClass('active');
+				toggleButton.parent().parent().find('li .sub-menu').slideUp(400);
+				toggleButton.parent().parent().find('.menu-toggle').removeClass('rotate');
+				toggleButton.next().toggleClass('active');
+				toggleButton.next().slideToggle(400);
+				toggleButton.toggleClass('rotate');
+			}
+		});
+	});
+	</script>
+}

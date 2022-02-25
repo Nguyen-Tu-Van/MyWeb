@@ -1,0 +1,22 @@
+﻿@model MyWeb.Areas.Admin.Controllers.RoleController.InputModel
+@{
+    ViewData["Title"] = "Tạo chức vụ";
+}
+
+<h2>@ViewData["title"]</h2>
+<partial name="_StatusMessage" model="@TempData["message"]"></partial>
+
+<div >
+    <form method="post">
+        <label>Nhập tên chức vụ</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name"></span>
+
+        <button type="submit" class="btn-primary btn mt-4" >Tạo</button>
+        <a asp-action="Index" class="btn-danger btn mt-4" >Quay về</a>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

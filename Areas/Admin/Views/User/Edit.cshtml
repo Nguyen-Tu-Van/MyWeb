@@ -1,0 +1,117 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model MyWeb.Models.User
+@{
+    int stt = 0;
+    ViewData["Title"] = "Edit";
+    var roles = ViewData["roles"] as List<IdentityRole>;
+    var listRoleId = ViewData["listRoleId"] as List<string>;
+    dynamic permissions;
+    permissions = ViewData["permissions"];
+    var permissionsPrivate = ViewData["permissionsPrivate"] as List<IdentityUserClaim<string>>;
+}
+<partial name="_StatusMessage" model="@TempData["message"]"></partial>
+<h3>Sửa khách hàng</h3>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <h4 class="text-center"> Thông tin khách hàng </h4>
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" disabled/>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Birthday" class="control-label"></label>
+                <input asp-for="Birthday" class="form-control" />
+                <span asp-validation-for="Birthday" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+    <div class="col-md-1"></div>
+    <div class="col-md-7 row">
+        <div class="col-md-12"><h4 class="text-center mb-0"> Thông tin chức vụ - quyền hạn </h4></div>
+        <div class="col-md-6">
+            <form method="post" asp-action="AddRoleUser" asp-route-id="@Model.Id">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Id" />
+                <div class="form-group">
+                    <label class="control-label">Chức vụ</label>
+                    <br />
+                    @foreach (var item in roles)
+                    {
+                        <label class="font-weight-normal mt-1">
+                            @if(listRoleId.Contains(item.Id))
+                            {
+                                <input type="checkbox" name="roles" checked value="@item" /> @item.Name
+                            }
+                            else 
+                            {
+                                <input type="checkbox" name="roles" value="@item" /> @item.Name
+                            }
+                        </label> 
+                        <br />
+                    }
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-info" />
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <label class="control-label">Quyền hạn</label>
+            <ul>
+                @foreach (var item in permissions)
+                {
+                    <li>@item.ClaimType - @item.ClaimValue</li>
+                }
+            </ul>
+        </div>
+        <div class="col-md-12">
+            <h4 class="text-center mb-0">Quyền hạn riêng</h4>
+            <a asp-area="Admin" asp-controller="Claim" asp-action="CreatePrivate" asp-route-id="@Model.Id" class="btn-danger btn m-1 p-1" >Thêm</a>
+            <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">STT</th>
+              <th scope="col">Tên quyền</th>
+              <th scope="col">Quyền truy cập</th>
+              <th scope="col">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>
+              @foreach (var item in permissionsPrivate)
+              {
+                 <tr>
+                  <th scope="row">@stt</th>
+                  <td>@item.ClaimType</td>
+                  <td>@item.ClaimValue</td>
+                  <td>
+                    <a class="btn-primary btn p-1 m-1" asp-area="Admin" asp-controller="Claim" asp-action="EditPrivate" asp-route-id="@item.Id">Edit</a> 
+                    <form class="d-inline" method="post">
+                        <button  class="btn-danger btn p-1 m-1" asp-area="Admin" asp-controller="Claim" asp-action="DeletePrivate" asp-route-id="@item.Id" onclick="if(!confirm('Bạn có chắc muốn xóa quyền không?')) return false;">Delete</button>
+                    </form>
+                  </td>
+                </tr>
+                stt++;
+              }
+          </tbody>
+        </table>
+    </div>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

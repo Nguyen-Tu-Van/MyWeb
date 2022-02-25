@@ -1,0 +1,57 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model MyWeb.Areas.Admin.Controllers.RoleController.InputModel
+@{
+    ViewData["Title"] = "Sửa chức vụ";
+    var permissions = ViewData["permissions"] as List<IdentityRoleClaim<string>>;
+    var stt = 1;
+}
+
+<partial name="_StatusMessage" model="@TempData["message"]"></partial>
+
+<div class="row">
+    <div class="col-md-4">
+    <h3>@ViewData["title"]</h3>
+        <form method="post">
+            <label>Nhập tên chức vụ</label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name"></span>
+            <button type="submit" class="btn-info btn mt-4" >Cập nhật</button>
+            <a asp-action="Index" class="btn-danger btn mt-4" >Quay về</a>
+        </form>
+    </div>
+    <div class="col-md-8">
+        <h3>Danh sách các quyền thuộc chức vụ</h3>
+        <a asp-area="Admin" asp-controller="Claim" asp-action="Create" asp-route-id="@ViewData["id"]" class="btn-danger btn m-1 p-1" >Thêm</a>
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">STT</th>
+              <th scope="col">Tên quyền</th>
+              <th scope="col">Quyền truy cập</th>
+              <th scope="col">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>
+              @foreach (var item in permissions)
+              {
+                 <tr>
+                  <th scope="row">@stt</th>
+                  <td>@item.ClaimType</td>
+                  <td>@item.ClaimValue</td>
+                  <td>
+                    <a class="btn-primary btn p-1 m-1" asp-area="Admin" asp-controller="Claim" asp-action="Edit" asp-route-id="@item.Id">Edit</a> 
+                    <form class="d-inline" method="post">
+                        <button  class="btn-danger btn p-1 m-1" asp-area="Admin" asp-controller="Claim" asp-action="Delete" asp-route-id="@item.Id" onclick="if(!confirm('Bạn có chắc muốn xóa quyền không?')) return false;">Delete</button>
+                    </form>
+                  </td>
+                </tr>
+                stt++;
+              }
+          </tbody>
+        </table>
+    </div>
+
+</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

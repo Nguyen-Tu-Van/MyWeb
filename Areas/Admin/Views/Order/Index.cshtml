@@ -1,0 +1,93 @@
+﻿@model IPagedList<MyWeb.Models.Order>
+@using X.PagedList;
+@using X.PagedList.Mvc.Core;
+
+@{
+    ViewData["Title"] = "Danh sách đơn hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    var total = ViewData["total"];
+    int[] result = ViewData["result"] as int[];
+}
+<div class="row">
+    <div class="col-md-2 text-danger">Chờ xác nhận</div>
+    <div class="col-md-2 text-primary">Đang giao hàng</div>
+    <div class="col-md-2 text-success">Giao hàng thành công</div>
+    <div class="col-md-2 text-warning">Đơn hàng bị hủy</div>
+    <div class="col-md-4 text-center text-info"><b>Tổng tiền</b></div>
+    <div class="col-md-2">@result[0]</div>
+    <div class="col-md-2">@result[1]</div>
+    <div class="col-md-2">@result[2]</div>
+    <div class="col-md-2">@result[3]</div>
+    <div class="col-md-4 text-center">@Convert.ToDecimal(total).ToString("#,##0") VNĐ</div>
+</div>
+<h2 class="text-center">Danh sách đơn hàng</h2>
+<partial name="_StatusMessage" model="@TempData["success"]"></partial>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Mã đơn</th>
+            <th>Tổng tiền</th>
+            <th>Thanh toán</th>
+            <th>Trạng thái đơn</th>
+            <th>Địa chỉ nhận</th>
+            <th>Ngày đặt</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) {
+        <tr>
+            <td>
+                @item.Id
+            </td>
+            <td>
+                @Convert.ToDecimal(item.Total).ToString("#,##0") VNĐ
+            </td>
+            <td>
+                @if (item.Payment == 1)
+                {
+                    <p class="text-success">Đã thanh toán</p>
+                }
+                else
+                {
+                    <p class="text-danger">Chưa thanh toán</p>
+                }
+            </td>
+            <td>
+                @if (item.Status == 1)
+                {
+                    <p class="text-danger">Chờ xác nhận</p>
+                }
+                else if (item.Status == 2)
+                {
+                    <p class="text-primary">Đang giao hàng</p>
+                }
+                else if (item.Status == 3)
+                {
+                    <p class="text-success">Giao hàng thành công</p>
+                }
+                else
+                {
+                    <p class="text-warning">Đơn hàng bị hủy</p>
+                }
+            </td>
+            <td>
+                @item.Address
+            </td>
+            <td>
+                @item.createdAt
+            </td>
+            <td>
+                <a class="btn-primary btn p-1 m-1" asp-action="Edit" asp-route-id="@item.Id">Confirm</a> 
+                <form class="d-inline" method="post">
+                    <button  class="btn-danger btn p-1 m-1" asp-action="Delete" asp-route-id="@item.Id" onclick="if(!confirm('Bạn có chắc muốn xóa đơn này không?')) return false;">Delete</button>
+                </form>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+<div class="col-md-12 text-center">
+    @Html.PagedListPager(Model, sotrang => Url.Action("Index", new { page = sotrang }))
+</div>

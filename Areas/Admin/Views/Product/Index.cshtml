@@ -1,0 +1,95 @@
+﻿@model IPagedList<MyWeb.Models.Product>
+@using X.PagedList;
+@using X.PagedList.Mvc.Core;
+
+@{
+    ViewData["Title"] = "Danh sách sản phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2>@ViewData["title"]</h2>
+<partial name="_StatusMessage" model="@TempData["success"]"></partial>
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<nav class="navbar navbar-light bg-light">
+  <form class="form-inline">
+    <input class="form-control mr-sm-2" type="search" name="key" value="@(ViewData["key"])" placeholder="Search" aria-label="Search">
+    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+  </form>
+</nav>
+@if (ViewData["key"] != "")
+{
+<p> Tìm thấy <b class="text-success">@ViewData["count"]</b> sản phẩm có liên quan đến <b class="text-danger">@ViewData["Key"]</b></p>
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Image)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Limit)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().category)
+            </th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                <img src="~/images/@item.Image" style="width:7rem" >
+            </td>
+            <td>
+                @Convert.ToDecimal(item.Price).ToString("#,##0") VNĐ
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Limit)
+            </td>
+            <td>
+                @if (item.Status == 1)
+                {
+                    <p>Mở bán</p>
+                }
+                else
+                {
+                    <p>Dừng bán</p>
+                }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.category.Name)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+<div class="col-md-12 text-center">
+    @if(ViewData["key"]!="")
+    {
+        @Html.PagedListPager(Model, sotrang => Url.Action("Index", new { key = ViewData["key"] ,page = sotrang }))
+    }
+    else
+    {
+        @Html.PagedListPager(Model, sotrang => Url.Action("Index", new { page = sotrang }))
+    }
+</div>
