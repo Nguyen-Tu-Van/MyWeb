@@ -105,6 +105,7 @@ namespace MyWeb.Areas.Admin.Controllers
             ViewData["ParentId"] = new SelectList(categories, "Id", "Name", category.Id);*/
             var categories = _context.Categories.Include(c => c.Parent).Include(c => c.ChildCategories).ToList();
             ViewData["list"] = categories.Where(c => c.ParentId == null);
+
             return View(category);
         }
 
